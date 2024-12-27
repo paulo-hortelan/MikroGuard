@@ -32,8 +32,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ghcr.io/xterm-inator/microguard
-            ghcr.io/xterm-inator/mikroguard
+            ghcr.io/paulo-hortelan/microguard
+            ghcr.io/paulo-hortelan/mikroguard
           tags: |
             type=ref,event=branch
             type=ref,event=pr
