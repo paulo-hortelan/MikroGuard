@@ -20,9 +20,6 @@ class CreateWireGuardPeer
 
     /**
      * Handle the event.
-     *
-     * @param ConfigCreated $event
-     * @return void
      */
     public function handle(ConfigCreated $event): void
     {
@@ -30,8 +27,10 @@ class CreateWireGuardPeer
             $event->config->peer_name,
             $event->config->address,
             $event->config->peer_public_key,
+            $event->config->peer_private_key,
             config('services.wireguard.interface'),
-            $event->config->peer_preshared_key
+            config('services.wireguard.preshared_key_enabled') ? $event->config->peer_preshared_key : null,
+            config('services.wireguard.client_endpoint'),
         );
 
         WireGuard::createPeer($peer);

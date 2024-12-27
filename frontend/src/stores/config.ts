@@ -17,6 +17,7 @@ export interface Config {
   tx: number
   last_handshake: string|null
   last_connected_from: string
+  client_endpoint: string|null
 }
 
 

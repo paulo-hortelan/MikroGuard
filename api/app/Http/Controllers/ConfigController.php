@@ -14,12 +14,12 @@ class ConfigController extends Controller
     {
         $this->authorize('config', $user);
 
-        abort_if(!$user->config, 404);
+        abort_if(! $user->config, 404);
 
         $peer = WireGuard::getPeer($user->config->peer_public_key);
 
         // if peer is null means it has been deleted from the router, we will delete the local config.
-        if (!$peer) {
+        if (! $peer) {
             $user->config->delete();
             abort(404);
         }

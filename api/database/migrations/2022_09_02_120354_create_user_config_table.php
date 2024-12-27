@@ -19,13 +19,14 @@ return new class extends Migration
             $table->string('peer_name');
             $table->string('peer_private_key');
             $table->string('peer_public_key');
-            $table->string('peer_preshared_key');
+            $table->string('peer_preshared_key')->nullable();
             $table->string('server_name');
             $table->string('server_public_key');
             $table->string('endpoint');
             $table->string('dns');
             $table->string('allowed_ips');
             $table->string('address');
+            $table->string('client_endpoint')->nullable();
             $table->timestamps();
         });
     }

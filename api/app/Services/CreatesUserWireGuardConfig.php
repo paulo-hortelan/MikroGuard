@@ -12,8 +12,7 @@ use SodiumException;
 
 readonly class CreatesUserWireGuardConfig
 {
-    public function __construct(private User $user)
-    {}
+    public function __construct(private User $user) {}
 
     /**
      * @throws SodiumException
@@ -24,7 +23,11 @@ readonly class CreatesUserWireGuardConfig
         $ip = $this->getNextAvailableIP();
         $interface = WireGuard::getWireGuardInterface();
         $key = KeyGenerator::generateBase64Keypair();
-        $psk = KeyGenerator::generateBase64Psk();
+        $psk = null;
+
+        if (config('services.wireguard.preshared_key_enabled')) {
+            $psk = KeyGenerator::generateBase64Psk();
+        }
 
         $config = new Config([
             'peer_name' => $this->user->username,
@@ -36,7 +39,8 @@ readonly class CreatesUserWireGuardConfig
             'endpoint' => config('services.wireguard.endpoint'),
             'dns' => config('services.wireguard.dns'),
             'allowed_ips' => config('services.wireguard.allowed_ips'),
-            'address' => (string)$ip,
+            'client_endpoint' => config('services.wireguard.client_endpoint'),
+            'address' => (string) $ip,
         ]);
 
         $config->user_id = $this->user->id;
@@ -66,10 +70,10 @@ readonly class CreatesUserWireGuardConfig
         foreach ($range as $ip) {
             $notFound = true;
             foreach ($ips as $existingIP) {
-                if (!$notFound) {
+                if (! $notFound) {
                     continue;
                 }
-                $notFound = !((string)$ip == (string)$existingIP);
+                $notFound = ! ((string) $ip == (string) $existingIP);
             }
             if ($notFound) {
                 return $ip;

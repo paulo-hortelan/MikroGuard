@@ -44,6 +44,8 @@ return [
         'dns' => env('ROUTEROS_WIREGUARD_DNS', '1.1.1.1'),
         'allowed_ips' => env('ROUTEROS_WIREGUARD_ALLOWED_IPS', '0.0.0.0/0'),
         'persistent_keepalive' => env('ROUTEROS_WIREGUARD_PERSISTENT_KEEPALIVE'),
-    ]
+        'client_endpoint' => env('ROUTEROS_WIREGUARD_CLIENT_ENDPOINT'),
+        'preshared_key_enabled' => env('ROUTEROS_WIREGUARD_PRESHARED_KEY_ENABLED', false),
+    ],
 
 ];

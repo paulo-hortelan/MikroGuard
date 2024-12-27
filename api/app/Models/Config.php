@@ -21,19 +21,20 @@ class Config extends Model
         'endpoint',
         'dns',
         'allowed_ips',
-        'address'
+        'address',
+        'client_endpoint',
     ];
 
     protected $casts = [
         'peer_private_key' => 'encrypted',
         'peer_public_key' => 'encrypted',
         'peer_preshared_key' => 'encrypted',
-        'server_public_key' => 'encrypted'
+        'server_public_key' => 'encrypted',
     ];
 
     protected $dispatchesEvents = [
         'created' => ConfigCreated::class,
-        'deleting' => ConfigDeleting::class
+        'deleting' => ConfigDeleting::class,
     ];
 
     public function user(): BelongsTo

@@ -10,7 +10,7 @@ class WireGuard extends RouterOS
 {
     public static function getWireGuardInterface(): WireGuardInterface
     {
-        $routerOS = new self();
+        $routerOS = new self;
 
         $response = $routerOS->client->query('/interface/wireguard/print', ['name', config('services.wireguard.interface')])->read();
 
@@ -23,7 +23,7 @@ class WireGuard extends RouterOS
 
     public static function getPeer(string $publicKey): ?array
     {
-        $routerOS = new self();
+        $routerOS = new self;
 
         $query = new Query('/interface/wireguard/peers/print');
         $query->where('public-key', $publicKey)
@@ -31,7 +31,7 @@ class WireGuard extends RouterOS
 
         $response = $routerOS->client->query($query)->read();
 
-        if (!count($response)) {
+        if (! count($response)) {
             return null;
         }
 
@@ -40,14 +40,14 @@ class WireGuard extends RouterOS
 
     public static function getPeers(): array
     {
-        $routerOS = new self();
+        $routerOS = new self;
 
         $query = new Query('/interface/wireguard/peers/print');
         $query->where('interface', config('services.wireguard.interface'));
 
         $response = $routerOS->client->query($query)->read();
 
-        if (!count($response)) {
+        if (! count($response)) {
             return [];
         }
 
@@ -62,16 +62,28 @@ class WireGuard extends RouterOS
 
     public static function createPeer(Peer $peer): void
     {
-        $routerOS = new self();
+        $routerOS = new self;
         $resource = Resource::getRouterResource();
         $useName = version_compare($resource->version, '7.15') >= 0;
 
         $query = new Query('/interface/wireguard/peers/add');
-        $query->equal('allowed-address',  $peer->allowedAddress)
+        $query->equal('allowed-address', $peer->allowedAddress)
             ->equal('interface', $peer->interface)
             ->equal('public-key', $peer->publicKey)
-            ->equal('preshared-key', $peer->presharedKey)
+            ->equal('client-address', $peer->allowedAddress)
             ->equal($useName ? 'name' : 'comment', $peer->name);
+
+        if (! empty($peer->clientEndpoint)) {
+            $query = $query->equal('client-endpoint', $peer->clientEndpoint);
+        }
+
+        if (! empty($peer->presharedKey)) {
+            $query = $query->equal('preshared-key', $peer->presharedKey);
+        }
+
+        if (! empty($peer->privateKey)) {
+            $query = $query->equal('private-key', $peer->privateKey);
+        }
 
         if (config('services.wireguard.persistent_keepalive')) {
             $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
@@ -82,7 +94,7 @@ class WireGuard extends RouterOS
 
     public static function deletePeer(string $publicKey): void
     {
-        $routerOS = new self();
+        $routerOS = new self;
 
         $peer = self::getPeer($publicKey);
 

@@ -26,14 +26,14 @@ class Config extends JsonResource
             'dns' => $this->dns,
             'allowed_ips' => $this->allowed_ips,
             'address' => $this->address,
-            $this->mergeWhen($this->details, fn () =>
-                [
-                    'rx' => (int)$this->details['rx'],
-                    'tx' => (int)$this->details['tx'],
-                    'last_handshake' => generate_last_handshake_date($this->details['last-handshake'] ?? null)?->format('Y-m-d H:i:s'),
-                    'last_connected_from' => $this->details['current-endpoint-address'] ?: '-',
-                ]
-            )
+            'client_endpoint' => $this->client_endpoint,
+            $this->mergeWhen($this->details, fn () => [
+                'rx' => (int) $this->details['rx'],
+                'tx' => (int) $this->details['tx'],
+                'last_handshake' => generate_last_handshake_date($this->details['last-handshake'] ?? null)?->format('Y-m-d H:i:s'),
+                'last_connected_from' => $this->details['current-endpoint-address'] ?: '-',
+            ]
+            ),
         ];
     }
 }

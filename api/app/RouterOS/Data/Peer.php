@@ -10,10 +10,11 @@ readonly class Peer
         $name,
         public string $allowedAddress,
         public string $publicKey,
+        public string $privateKey,
         public string $interface,
-        public string $presharedKey,
-    )
-    {
+        public ?string $presharedKey,
+        public ?string $clientEndpoint,
+    ) {
         $this->name = preg_replace('/[^A-Za-z0-9 .\-_@+]/', '', $name);
     }
 }
