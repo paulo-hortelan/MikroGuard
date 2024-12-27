@@ -10,7 +10,8 @@ RUN apk add --no-cache \
     mysql-client \
     autoconf \
     build-base \
-    zip unzip
+    zip unzip \
+    sqlite
 
 RUN docker-php-ext-install bcmath sockets pcntl pdo_mysql zip
 

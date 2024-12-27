@@ -9,18 +9,17 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
      */
     protected function schedule(Schedule $schedule): void
     {
+        if (app()->environment('production')) {
+            $schedule->command('backup:clean --only-db --disable-notifications')->daily()->at('01:00');
+            $schedule->command('backup:run --disable-notifications')->daily()->at('01:30');
+        }
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands(): void
     {
