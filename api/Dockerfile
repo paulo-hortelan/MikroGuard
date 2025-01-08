@@ -24,6 +24,6 @@ RUN if ! php -m | grep -q redis; then \
 # Verify that the zip extension is installed and enabled
 RUN php -m | grep zip
 
-WORKDIR /var/www
+WORKDIR /opt/app
 
 CMD ["php", "artisan", "octane:start", "--watch", "--poll", "--host=0.0.0.0"]

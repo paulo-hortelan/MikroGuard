@@ -22,11 +22,11 @@ RUN composer install \
 FROM phpswoole/swoole:6.0-php8.4-alpine as base
 LABEL authors="David Smith <david@xterm.me>"
 
-RUN apk add --no-cache linux-headers
+# RUN apk add --no-cache linux-headers
 
-RUN docker-php-ext-install bcmath && \
-    docker-php-ext-install sockets && \
-    docker-php-ext-install pcntl
+# RUN docker-php-ext-install bcmath && \
+#     docker-php-ext-install sockets && \
+#     docker-php-ext-install pcntl
 
 COPY --chown=www-data:www-data api /opt/app
 COPY --chown=www-data:www-data --from=vendor /app/vendor/ /opt/app/vendor

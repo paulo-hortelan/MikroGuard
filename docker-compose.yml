@@ -4,7 +4,7 @@ services:
             context: ./api/
         volumes:
             - ./php.ini:/usr/local/etc/php/conf.d/php.ini
-            - ./api:/var/www
+            - ./api:/opt/app
         ports:
             - "8000:8000"
     vue:
