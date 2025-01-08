@@ -22,16 +22,36 @@ RUN composer install \
 FROM phpswoole/swoole:6.0-php8.4-alpine as base
 LABEL authors="David Smith <david@xterm.me>"
 
-# RUN apk add --no-cache linux-headers
+# Install required packages and PHP extensions
+RUN apk add --no-cache \
+    linux-headers \
+    nodejs \
+    npm \
+    libzip-dev \
+    libpq-dev \
+    mysql-client \
+    autoconf \
+    build-base \
+    zip unzip \
+    sqlite
 
-# RUN docker-php-ext-install bcmath && \
-#     docker-php-ext-install sockets && \
-#     docker-php-ext-install pcntl
+# Install PHP extensions
+RUN docker-php-ext-install bcmath sockets pcntl pdo_mysql zip
 
+# Install Redis extension if not already installed
+RUN if ! php -m | grep -q redis; then \
+    pecl install redis && docker-php-ext-enable redis; \
+    fi
+
+# Verify that the zip extension is installed and enabled
+RUN php -m | grep zip
+
+# Copy application files
 COPY --chown=www-data:www-data api /opt/app
 COPY --chown=www-data:www-data --from=vendor /app/vendor/ /opt/app/vendor
 COPY --chown=www-data:www-data --from=vuejs /opt/app/dist/ /opt/app/public
 
+# Clean up and set permissions
 RUN rm -f /opt/app/.env
 RUN rm -rf /opt/app/storage/*
 RUN chown -R www-data:www-data /opt/app/storage
