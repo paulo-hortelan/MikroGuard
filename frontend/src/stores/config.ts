@@ -47,10 +47,10 @@ export const useConfigStore = defineStore({
         }
         this.config = response.data.data;
         return response;
-    } catch (error) {
-        console.error('Error creating config:', error);
-        throw error;
-    }
+      } catch (error) {
+          console.error('Error creating config:', error);
+          throw error;
+      }
     },
 
     async deleteConfig(userId: string): Promise<any> {
