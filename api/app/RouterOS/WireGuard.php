@@ -68,7 +68,7 @@ class WireGuard extends RouterOS
 
         $query = new Query('/interface/wireguard/peers/add');
         $query->equal('endpoint-port', 23231)
-            ->equal('allowed-address', '0.0.0.0/0')
+            ->equal('allowed-address', $peer->allowedAddress)
             ->equal('interface', $peer->interface)
             ->equal('public-key', $peer->publicKey)
             ->equal('client-address', $peer->allowedAddress)

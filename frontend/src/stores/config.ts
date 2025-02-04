@@ -5,7 +5,7 @@ export interface Config {
   peer_name: string
   peer_private_key: string
   peer_public_key: string
-  peer_preshared_key: string
+  peer_preshared_key: string|null
   peer_persistent_keepalive?: number
   server_name: string
   server_public_key: string
