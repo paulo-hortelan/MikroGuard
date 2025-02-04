@@ -67,36 +67,27 @@ class WireGuard extends RouterOS
         $useName = version_compare($resource->version, '7.15') >= 0;
 
         $query = new Query('/interface/wireguard/peers/add');
-        $query->equal('endpoint-port', 23231)
-            ->equal('allowed-address', $peer->allowedAddress)
+        $query->equal('allowed-address', $peer->allowedAddress)
             ->equal('interface', $peer->interface)
             ->equal('public-key', $peer->publicKey)
             ->equal('client-address', $peer->allowedAddress)
             ->equal($useName ? 'name' : 'comment', $peer->name);
 
+        if (! empty($peer->clientEndpoint)) {
+            $query = $query->equal('client-endpoint', $peer->clientEndpoint);
+        }
+
         if (! empty($peer->presharedKey)) {
             $query = $query->equal('preshared-key', $peer->presharedKey);
         }
-
-        if (config('services.wireguard.persistent_keepalive')) {
-            $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
-        }
-
-        $query = $query->equal('responder', 'yes');
 
         if (! empty($peer->privateKey)) {
             $query = $query->equal('private-key', $peer->privateKey);
         }
 
-        if (! empty($peer->clientEndpoint)) {
-            $query = $query->equal('client-endpoint', $peer->clientEndpoint);
+        if (config('services.wireguard.persistent_keepalive')) {
+            $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
         }
-
-        $query = $query->equal('client-dns', '192.168.100.254');
-
-        $query = $query->equal('client-keepalive', 5);
-
-        $query = $query->equal('client-listen-port', 23231);
 
         $routerOS->client->query($query)->read();
     }
