@@ -40,11 +40,17 @@ export const useConfigStore = defineStore({
     },
 
     async createConfig(userId: string): Promise<any> {
-      const response = await http.post(`config/${userId}`)
-
-      this.config = response.data.data
-
-      return response
+      try {
+        const response = await http.post(`config/${userId}`);
+        if (!response || !response.data || !response.data.data) {
+            throw new Error('Invalid response structure');
+        }
+        this.config = response.data.data;
+        return response;
+    } catch (error) {
+        console.error('Error creating config:', error);
+        throw error;
+    }
     },
 
     async deleteConfig(userId: string): Promise<any> {
