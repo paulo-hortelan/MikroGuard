@@ -73,6 +73,8 @@ class WireGuard extends RouterOS
             ->equal('client-address', $peer->allowedAddress)
             ->equal($useName ? 'name' : 'comment', $peer->name);
 
+        $query = $query->equal('responder', 'yes');
+
         if (! empty($peer->clientEndpoint)) {
             $query = $query->equal('client-endpoint', $peer->clientEndpoint);
         }
