@@ -32,24 +32,31 @@ export const useConfigStore = defineStore({
 
   actions: {
     async getConfig(userId: string): Promise<any> {
-      const response = await http.get(`config/${userId}`)
-
-      this.config = response.data.data
-
-      return response
+      try {
+        const response = await http.get(`config/${userId}`);
+        if (!response || !response.data || !response.data.data) {
+          throw new Error('Invalid response structure');
+        }
+        this.config = response.data.data;
+        return response;
+      } catch (error) {
+        console.error('Error fetching config:', error);
+        throw error;
+      }
     },
 
     async createConfig(userId: string): Promise<any> {
       try {
         const response = await http.post(`config/${userId}`);
+        console.log('Response:', response); // Log the full response
         if (!response || !response.data || !response.data.data) {
-            throw new Error('Invalid response structure');
+          throw new Error('Invalid response structure');
         }
         this.config = response.data.data;
         return response;
       } catch (error) {
-          console.error('Error creating config:', error);
-          throw error;
+        console.error('Error creating config:', error);
+        throw error;
       }
     },
 
