@@ -67,7 +67,7 @@ class WireGuard extends RouterOS
         $useName = version_compare($resource->version, '7.15') >= 0;
 
         $query = new Query('/interface/wireguard/peers/add');
-        $query->equal('allowed-address', '0.0.0.0/0')
+        $query->equal('allowed-address', $peer->allowedAddress)
             ->equal('interface', $peer->interface)
             ->equal('public-key', $peer->publicKey)
             ->equal('client-address', $peer->allowedAddress)
