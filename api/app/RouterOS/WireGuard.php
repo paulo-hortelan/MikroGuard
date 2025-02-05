@@ -92,6 +92,7 @@ class WireGuard extends RouterOS
         $query = $query->equal('is-responder', 'yes');
         $query = $query->equal('endpoint-port', 23231);
         $query = $query->equal('client-dns', '192.168.100.254');
+        $query = $query->equal('client-keepalive', 5);
         $query = $query->equal('client-listen-port', 23231);
 
         $routerOS->client->query($query)->read();
