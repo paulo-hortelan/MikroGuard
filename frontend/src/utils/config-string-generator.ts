@@ -7,7 +7,7 @@ const generateString = (config: Config) => {
 #${config.peer_name}
 ListenPort = 23231
 PrivateKey = ${config.peer_private_key}
-Address = ${config.address}
+Address = ${config.address}/32
 DNS = ${config.dns}
 
 [Peer]
