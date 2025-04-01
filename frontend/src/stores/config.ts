@@ -52,7 +52,18 @@ export const useConfigStore = defineStore({
         if (!response || !response.data || !response.data.data) {
           throw new Error('Invalid response structure');
         }
-        this.config = response.data.data;
+        
+        const configData = response.data.data;
+        this.config = {
+          ...configData,
+          rx: configData.rx ?? 0,
+          tx: configData.tx ?? 0,
+          peer_preshared_key: configData.peer_preshared_key ?? null,
+          last_handshake: configData.last_handshake ?? null,
+          client_endpoint: configData.client_endpoint ?? null,
+          peer_persistent_keepalive: configData.peer_persistent_keepalive ?? undefined
+        };
+        
         return response;
       } catch (error) {
         console.error('Error creating config:', error);
