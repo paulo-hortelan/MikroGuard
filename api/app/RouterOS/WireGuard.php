@@ -90,7 +90,7 @@ class WireGuard extends RouterOS
                 $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
             }
 
-            $query = $query->equal('is-responder', 'yes');
+            $query = $query->equal('responder', 'yes');
             $query = $query->equal('endpoint-port', 23231);
             $query = $query->equal('client-dns', '192.168.100.254');
             $query = $query->equal('client-keepalive', 5);
