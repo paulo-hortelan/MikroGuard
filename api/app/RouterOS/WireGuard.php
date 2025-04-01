@@ -62,40 +62,65 @@ class WireGuard extends RouterOS
 
     public static function createPeer(Peer $peer): void
     {
-        $routerOS = new self;
-        $resource = Resource::getRouterResource();
-        $useName = version_compare($resource->version, '7.15') >= 0;
+        try {
+            $routerOS = new self;
+            $resource = Resource::getRouterResource();
+            $useName = version_compare($resource->version, '7.15') >= 0;
 
-        $query = new Query('/interface/wireguard/peers/add');
-        $query->equal('allowed-address', $peer->allowedAddress)
-            ->equal('interface', $peer->interface)
-            ->equal('public-key', $peer->publicKey)
-            ->equal('client-address', $peer->allowedAddress)
-            ->equal($useName ? 'name' : 'comment', $peer->name);
+            $query = new Query('/interface/wireguard/peers/add');
+            $query->equal('allowed-address', $peer->allowedAddress)
+                ->equal('interface', $peer->interface)
+                ->equal('public-key', $peer->publicKey)
+                ->equal('client-address', $peer->allowedAddress)
+                ->equal($useName ? 'name' : 'comment', $peer->name);
 
-        if (! empty($peer->clientEndpoint)) {
-            $query = $query->equal('client-endpoint', $peer->clientEndpoint);
+            if (! empty($peer->clientEndpoint)) {
+                $query = $query->equal('client-endpoint', $peer->clientEndpoint);
+            }
+
+            if (! empty($peer->presharedKey)) {
+                $query = $query->equal('preshared-key', $peer->presharedKey);
+            }
+
+            if (! empty($peer->privateKey)) {
+                $query = $query->equal('private-key', $peer->privateKey);
+            }
+
+            if (config('services.wireguard.persistent_keepalive')) {
+                $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
+            }
+
+            $query = $query->equal('is-responder', 'yes');
+            $query = $query->equal('endpoint-port', 23231);
+            $query = $query->equal('client-dns', '192.168.100.254');
+            $query = $query->equal('client-keepalive', 5);
+            $query = $query->equal('client-listen-port', 23231);
+
+            \Illuminate\Support\Facades\Log::info('Attempting to create WireGuard peer', [
+                'peer_name' => $peer->name,
+                'public_key' => $peer->publicKey,
+                'allowed_address' => $peer->allowedAddress,
+                'interface' => $peer->interface,
+                'query' => $query->getQuery(),
+            ]);
+
+            $response = $routerOS->client->query($query)->read();
+
+            \Illuminate\Support\Facades\Log::info('WireGuard peer created successfully', [
+                'peer_name' => $peer->name,
+                'response' => $response,
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Failed to create WireGuard peer', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'peer_name' => $peer->name,
+                'public_key' => $peer->publicKey,
+                'allowed_address' => $peer->allowedAddress,
+            ]);
+
+            throw $e;
         }
-
-        if (! empty($peer->presharedKey)) {
-            $query = $query->equal('preshared-key', $peer->presharedKey);
-        }
-
-        if (! empty($peer->privateKey)) {
-            $query = $query->equal('private-key', $peer->privateKey);
-        }
-
-        if (config('services.wireguard.persistent_keepalive')) {
-            $query->equal('persistent-keepalive', config('services.wireguard.persistent_keepalive'));
-        }
-
-        $query = $query->equal('is-responder', 'yes');
-        $query = $query->equal('endpoint-port', 23231);
-        $query = $query->equal('client-dns', '192.168.100.254');
-        $query = $query->equal('client-keepalive', 5);
-        $query = $query->equal('client-listen-port', 23231);
-
-        $routerOS->client->query($query)->read();
     }
 
     public static function deletePeer(string $publicKey): void
